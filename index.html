@@ -3,23 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Location Game</title>
+    <title>bienvenue dans la version personalisée du wheretaken Milèsse, Mashallah</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: lightblue; }
         #map { height: 400px; width: 80%; margin: auto; }
-        img { max-width: 100%; height: auto; margin-bottom: 10px; }
+        img { max-width: 1000px; height: auto; margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <h1>Guess the Location</h1>
-    <img id="photo" src="" alt="Location Photo">
-    <div id="map"></div>
-    <button onclick="submitGuess()">Submit Guess</button>
-    <p id="score">Score: 0</p>
+    <h1>bienvenue dans la version personalisée du wheretaken Milèsse, Mashallah</h1>
+    <p>Vas-y donne moi ton pseudo :</p>
+    <input type="text" id="username" placeholder="Entre ton pseudo">
+    <button onclick="startGame()">Commencer</button>
+    <div id="game" style="display:none;">
+        <img id="photo" src="" alt="Location Photo">
+        <div id="map"></div>
+        <button onclick="submitGuess()">Submit Guess</button>
+        <p id="current-score">Current Score: 0</p>
+        <p id="total-score">Total Score: 0</p>
+        <p id="score-message"></p>
+    </div>
 
     <script>
+        let username = "";
         const images = [
             { src: "A.jpg", lat: 37.404710, lon: -3.719147 },
             { src: "B.jpg", lat: 31.362675, lon: -8.280101 },
@@ -34,6 +42,12 @@
         let currentImageIndex = 0;
         let totalScore = 0;
         let map, marker;
+
+        function startGame() {
+            username = document.getElementById("username").value || "Joueur";
+            document.getElementById("game").style.display = "block";
+            loadGame();
+        }
 
         function loadGame() {
             document.getElementById("photo").src = images[currentImageIndex].src;
@@ -53,12 +67,19 @@
             const distance = getDistance(marker.lat, marker.lng, actual.lat, actual.lon);
             let score = distance > 200 ? 0 : Math.max(0, 200 - (distance * 2));
             totalScore += Math.round(score);
-            document.getElementById("score").textContent = "Total Score: " + totalScore;
+            
+            document.getElementById("current-score").textContent = "Current Score: " + Math.round(score);
+            document.getElementById("total-score").textContent = "Total Score: " + totalScore;
+            document.getElementById("score-message").textContent = getScoreMessage(score);
+            
             currentImageIndex++;
             if (currentImageIndex < images.length) {
-                document.getElementById("photo").src = images[currentImageIndex].src;
-                map.setView([30, -8], 5);
-                if (marker) map.removeLayer(marker);
+                setTimeout(() => {
+                    document.getElementById("photo").src = images[currentImageIndex].src;
+                    map.setView([30, -8], 5);
+                    if (marker) map.removeLayer(marker);
+                    document.getElementById("score-message").textContent = "";
+                }, 3000);
             } else {
                 alert("Game Over! Final Score: " + totalScore);
             }
@@ -73,7 +94,16 @@
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
-        window.onload = loadGame;
+        function getScoreMessage(score) {
+            if (score <= 50) return username + ", allez let's go ce sera mieux la prochaine fois";
+            if (score <= 100) return username + ", je m'attendais à rien mais jsuis quand même déçu";
+            if (score <= 150) return username + ", t'es un ouff fieuuuu bien joué !!";
+            return username + ", OMG BRAVO T'ES UN KING";
+        }
+
+        window.onload = function() {
+            document.getElementById("game").style.display = "none";
+        }
     </script>
 </body>
 </html>
